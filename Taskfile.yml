@@ -8,7 +8,7 @@ vars:
     sh: "date -u +%Y-%m-%dT%H%M%S%Z"
   BUILD_ARGS: >-
     --build-arg VERSION={{ .VERSION }}
-    --build-arg CHECKSUM={{ .CHECKSUM }}
+    --build-arg COMMIT={{ .COMMIT }}
     --build-arg BUILD_DATE={{ .BUILD_DATE }}
   TAG_VERSION: "{{ .NS }}/{{ .IMAGE_NAME }}:{{ .VERSION }}-ls{{ .LS }}"
   TAG_LATEST: "{{ .NS }}/{{ .IMAGE_NAME }}:latest"
@@ -75,7 +75,7 @@ tasks:
     preconditions:
       - sh: type pre-commit
         msg: "pre-commit is not installed. Run 'task deps:pre-commit'"
-  silent: true
+    silent: true
 
   prune:
     desc: Prune the builder
@@ -120,8 +120,8 @@ tasks:
       - "pass docker/token | gh secret set DOCKERHUB_TOKEN"
       - "pass quay.io/robot | gh secret set QUAY_USERNAME"
       - "pass quay.io/token | gh secret set QUAY_TOKEN"
-    preconditions:
-      - type pass
+    deps:
+      - deps:_secrets-reqs
     silent: true
 
   shell:
@@ -144,7 +144,7 @@ tasks:
     cmds:
       - "printf 'task: Available variables for this project:\n'"
       - 'printf "{{ .COLOR }}* BASE\e[m               %s\n" "{{ .BASE }}"'
-      - 'printf "{{ .COLOR }}* CHECKSUM\e[m           %s\n" "{{ .CHECKSUM }}"'
+      - 'printf "{{ .COLOR }}* COMMIT\e[m             %s\n" "{{ .COMMIT }}"'
       - 'printf "{{ .COLOR }}* CONTAINER\e[m          %s\n" "{{ .CONTAINER }}"'
       - 'printf "{{ .COLOR }}* CONTAINER_INSTANCE\e[m %s\n" "{{ .CONTAINER_INSTANCE }}"'
       - 'printf "{{ .COLOR }}* CONTAINER_NAME\e[m     %s\n" "{{ .CONTAINER_NAME }}"'
@@ -163,7 +163,8 @@ tasks:
       - 'printf "{{ .COLOR }}* TYPE\e[m               %s\n" "{{ .TYPE }}"'
       - 'printf "{{ .COLOR }}* VERSION\e[m            %s\n" "{{ .VERSION }}"'
     vars:
-      COLOR: '\e[1;34m' # Blue
+      # Blue
+      COLOR: '\e[1;34m'
     silent: true
 
   default:

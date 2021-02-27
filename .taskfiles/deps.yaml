@@ -90,6 +90,12 @@ tasks:
       - echo "Be sure to update your PATH, PATH=\$PATH:\$PWD/.bin"
     silent: true
 
+  _secrets-reqs:
+    cmds:
+      - task deps:_need BIN=pass
+      - task deps:_need BIN=gh
+    silent: true
+
   _distrib-reqs:
     cmds:
       - task deps:_need BIN=wget
